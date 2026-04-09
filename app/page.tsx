@@ -100,6 +100,7 @@ export default function ERPApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -122,6 +123,7 @@ export default function ERPApp() {
         if (savedOrders) setOrders(JSON.parse(savedOrders));
         if (savedCustomers) setCustomers(JSON.parse(savedCustomers));
         if (savedProducts) setProducts(JSON.parse(savedProducts));
+        setIsDataLoaded(true);
       };
 
       if (supabase) {
@@ -131,9 +133,10 @@ export default function ERPApp() {
             db.getCustomers(),
             db.getProducts()
           ]);
-          if (dbOrders.length > 0) setOrders(dbOrders);
-          if (dbCustomers.length > 0) setCustomers(dbCustomers);
-          if (dbProducts.length > 0) setProducts(dbProducts);
+          setOrders(dbOrders);
+          setCustomers(dbCustomers);
+          setProducts(dbProducts);
+          setIsDataLoaded(true);
         } catch (error) {
           console.warn('Supabase indisponível ou não configurado. Usando armazenamento local.');
           loadFromLocal();
@@ -147,14 +150,12 @@ export default function ERPApp() {
   }, []);
 
   React.useEffect(() => {
-    if (isClient) {
-      if (!supabase) {
-        localStorage.setItem('erp_orders', JSON.stringify(orders));
-        localStorage.setItem('erp_customers', JSON.stringify(customers));
-        localStorage.setItem('erp_products', JSON.stringify(products));
-      }
+    if (isClient && isDataLoaded) {
+      localStorage.setItem('erp_orders', JSON.stringify(orders));
+      localStorage.setItem('erp_customers', JSON.stringify(customers));
+      localStorage.setItem('erp_products', JSON.stringify(products));
     }
-  }, [orders, customers, products, isClient]);
+  }, [orders, customers, products, isClient, isDataLoaded]);
 
   const navigation = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
