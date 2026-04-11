@@ -19,6 +19,7 @@ import OrdersView from '@/components/OrdersView';
 import CustomersView from '@/components/CustomersView';
 import ProductsView from '@/components/ProductsView';
 import LoginView from '@/components/LoginView';
+import SettingsView from '@/components/SettingsView';
 
 import { db } from '@/lib/db';
 import { supabase } from '@/lib/supabase';
@@ -220,7 +221,14 @@ export default function ERPApp() {
             </nav>
 
             <div className="p-4 border-t border-slate-800 space-y-1">
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">
+              <button 
+                onClick={() => setActiveTab('configuracoes')}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                  activeTab === 'configuracoes'
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
                 <Settings className="w-5 h-5" />
                 Configurações
               </button>
@@ -284,6 +292,7 @@ export default function ERPApp() {
               {activeTab === 'pedidos' && <OrdersView orders={orders} setOrders={setOrders} customers={customers} products={products} setProducts={setProducts} />}
               {activeTab === 'clientes' && <CustomersView customers={customers} setCustomers={setCustomers} />}
               {activeTab === 'produtos' && <ProductsView products={products} setProducts={setProducts} />}
+              {activeTab === 'configuracoes' && <SettingsView />}
             </motion.div>
           </AnimatePresence>
         </main>
